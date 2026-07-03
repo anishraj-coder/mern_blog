@@ -7,13 +7,60 @@ import postRoutes from './routes/post.route.js';
 import commentRoutes from './routes/comment.route.js';
 import cookieParser from 'cookie-parser';
 import path from 'path';
+import Post from './models/post.model.js';
+import User from './models/user.model.js';
 
 dotenv.config();
 
 mongoose
   .connect(process.env.MONGO)
-  .then(() => {
+  .then(async () => {
     console.log('MongoDb is connected');
+    try {
+      const postCount = await Post.countDocuments();
+      if (postCount === 0) {
+        console.log('No posts found in MongoDB. Seeding dummy posts...');
+        
+        // Find or create a seed user to act as author
+        let user = await User.findOne();
+        if (!user) {
+          console.log('No users found in MongoDB. Creating a seed admin user...');
+          const bcryptjs = (await import('bcryptjs')).default;
+          const hashedPassword = bcryptjs.hashSync('admin123', 10);
+          user = new User({
+            username: 'admin',
+            email: 'admin@blog.com',
+            password: hashedPassword,
+            isAdmin: true,
+          });
+          await user.save();
+          console.log('Seed admin user created: admin@blog.com / admin123');
+        }
+
+        const dummyPosts = [
+          {
+            userId: user._id.toString(),
+            title: 'Getting Started with the MERN Stack',
+            slug: 'getting-started-with-the-mern-stack',
+            content: '<p>The MERN stack (MongoDB, Express, React, Node.js) is one of the most popular stacks for building modern, high-performance web applications. In this post, we explore the core building blocks and set up a basic boilerplate to kickstart your full-stack development journey.</p>',
+            category: 'javascript',
+            image: 'https://media.geeksforgeeks.org/wp-content/cdn-uploads/20221114110410/Top-10-JavaScript-Project-Ideas-For-Beginners-2023.png',
+          },
+          {
+            userId: user._id.toString(),
+            title: 'Mastering CSS Layouts and Grid Systems',
+            slug: 'mastering-css-layouts-and-grid-systems',
+            content: '<p>Visual layouts are crucial to providing a high-end user experience. Modern web design utilizes grid systems, flexbox alignments, and glassmorphic translucent containers to capture attention. Learn how to structure clean HTML and write reusable utility classes in vanilla CSS.</p>',
+            category: 'css',
+            image: 'https://media.geeksforgeeks.org/wp-content/cdn-uploads/20221114110410/Top-10-JavaScript-Project-Ideas-For-Beginners-2023.png',
+          }
+        ];
+        await Post.insertMany(dummyPosts);
+        console.log('Dummy posts successfully seeded!');
+      }
+    } catch (err) {
+      console.error('Error seeding dummy posts:', err);
+    }
   })
   .catch((err) => {
     console.log(err);

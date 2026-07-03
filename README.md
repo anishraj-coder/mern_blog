@@ -1,6 +1,6 @@
 # TechCraft MERN Blog
 
-A full-stack blog platform built with the MERN stack (MongoDB, Express, React, Node.js).
+A premium, full-stack blog platform built with the MERN stack (MongoDB, Express, React, Node.js), featuring a modern space-dark design system, robust authentication, database-backed sessions, and advanced micro-animations.
 
 ## Table of Contents
 - [Features](#features)
@@ -19,18 +19,15 @@ A full-stack blog platform built with the MERN stack (MongoDB, Express, React, N
 - [Credits](#credits)
 
 ## Features
-- User authentication (Sign Up, Sign In, OAuth)
-- Create, update, and delete blog posts
-- Commenting and liking system
-- User dashboard with admin and private routes
-- Responsive and modern UI with Tailwind CSS
-- State management with Redux
-- Theming support (dark/light mode)
-- Admin dashboard for managing users, posts, and comments
-- Like and reply to comments
-- Search and filter posts
-- Cloudinary integration for image uploads
-- Persistent login with JWT and cookies
+- **MongoDB-Backed Session Authentication**: Secure, database-managed session tokens with automated MongoDB TTL (Time-To-Live) expiration checks.
+- **Admin-by-Default Testing Model**: Grants instant blogging tools access (Create, Edit, Delete, stats) to any newly registered account for seamless local evaluation.
+- **Custom Branding**: Fully customized brand assets featuring a custom SVG Hexagonal Monogram logo representing **Anish Raj**.
+- **Automated Post Seeding**: Automatically seeds realistic starter articles on server launch if MongoDB is empty.
+- **Space-Dark Theme**: Premium UI design with flowing gradient accents, glowing mesh blurs, and glassmorphic card layouts.
+- **Interactive Micro-Animations**: Rich interface feedback, infinite drifting background glows, and cascading grid entries powered by Framer Motion.
+- **Quick-Access Posting**: Fixed header shortcut button for writing posts, visible to authenticated authors anywhere on the site.
+- **Core Blogging System**: High-fidelity rich text editor, full commenting thread system with comment likes/replies, and advanced multi-filter Search.
+- **Cloudinary Integration**: Cloud-based media storage integration for post banner image uploads.
 
 ## Project Structure
 
@@ -45,6 +42,7 @@ mern-blog/
 │   ├── models/                 # Mongoose models
 │   │   ├── comment.model.js
 │   │   ├── post.model.js
+│   │   ├── session.model.js    # Mongoose session schema
 │   │   └── user.model.js
 │   ├── routes/                 # API routes
 │   │   ├── auth.route.js
@@ -53,8 +51,8 @@ mern-blog/
 │   │   └── user.route.js
 │   ├── utils/                  # Utility functions and middleware
 │   │   ├── error.js
-│   │   └── verifyUser.js
-│   └── index.js                # Server entry point
+│   │   └── verifyUser.js       # Session validation middleware
+│   └── index.js                # Server entry point & auto-seeder
 ├── client/                     # Frontend (React, Vite)
 │   ├── src/
 │   │   ├── components/         # Reusable UI components
@@ -69,21 +67,20 @@ mern-blog/
 │   │   │   ├── DashUsers.jsx
 │   │   │   ├── Footer.jsx
 │   │   │   ├── Header.jsx
-│   │   │   ├── OAuth.jsx
+│   │   │   ├── Logo.jsx        # Monogram SVG Logo
 │   │   │   ├── OnlyAdminPrivateRoute.jsx
 │   │   │   ├── PostCard.jsx
 │   │   │   ├── PrivateRoute.jsx
 │   │   │   ├── ScrollToTop.jsx
 │   │   │   └── ThemeProvider.jsx
-│   │   ├── firebase.js         # Firebase configuration
 │   │   ├── pages/              # Main pages
 │   │   │   ├── About.jsx
 │   │   │   ├── CreatePost.jsx
 │   │   │   ├── Dashboard.jsx
 │   │   │   ├── Home.jsx
 │   │   │   ├── PostPage.jsx
-│   │   │   ├── Projects.jsx
-│   │   │   ├── Search.jsx
+│   │   │   ├── Projects.jsx    # Dynamically fetched projects
+│   │   │   ├── Search.jsx      # Glassmorphic search view
 │   │   │   ├── SignIn.jsx
 │   │   │   ├── SignUp.jsx
 │   │   │   └── UpdatePost.jsx
@@ -94,41 +91,41 @@ mern-blog/
 │   │   │   └── user/
 │   │   │       └── userSlice.js
 │   │   ├── main.jsx            # React entry point
-│   │   └── index.css           # Global styles
-│   ├── index.html              # HTML template
+│   │   └── index.css           # Global dark-theme styles
+│   ├── index.html              # HTML template with Outfit typography
 │   ├── package.json            # Frontend dependencies
 │   ├── postcss.config.js       # PostCSS config
 │   ├── tailwind.config.js      # Tailwind CSS config
 │   └── vite.config.js          # Vite config
-├── .env                        # Environment variables
-├── package.json                # Project metadata and scripts
+├── .env                        # Root server environment variables
+├── package.json                # Project metadata and workspace scripts
 └── README.md                  # Project documentation
 ```
 
 ## Tech Stack
-- **Frontend:** React, Vite, Redux Toolkit, Tailwind CSS, Flowbite React, React Router, Cloudinary
-- **Backend:** Node.js, Express, MongoDB, Mongoose, JWT, bcryptjs, cookie-parser, dotenv
+- **Frontend:** React, Vite, Redux Toolkit, Framer Motion, Tailwind CSS, Flowbite React, React Router, Cloudinary
+- **Backend:** Node.js, Express, MongoDB, Mongoose (with TTL indexes), bcryptjs, cookie-parser, dotenv
 - **Other:** ESLint, PostCSS, Vite Proxy, React Icons
 
 ## API Endpoints
 
 ### Auth
-- `POST /api/auth/signup` — Register a new user
-- `POST /api/auth/signin` — Login
-- `POST /api/auth/google` — Google OAuth login
+- `POST /api/auth/signup` — Register a new user (with robust email validation)
+- `POST /api/auth/signin` — Login (initiates database-backed session)
 
 ### User
 - `GET /api/user/getusers` — Get all users (admin)
+- `GET /api/user/projects` — Fetch author's active projects dynamically
 - `GET /api/user/:userId` — Get user by ID
-- `PUT /api/user/update/:userId` — Update user
-- `DELETE /api/user/delete/:userId` — Delete user
-- `POST /api/user/signout` — Sign out
+- `PUT /api/user/update/:userId` — Update user details
+- `DELETE /api/user/delete/:userId` — Delete user account & associated sessions
+- `POST /api/user/signout` — Sign out & clear active session
 
 ### Post
-- `POST /api/post/create` — Create post (admin)
-- `GET /api/post/getposts` — Get posts (with filters)
-- `PUT /api/post/updatepost/:postId/:userId` — Update post (admin)
-- `DELETE /api/post/deletepost/:postId/:userId` — Delete post (admin)
+- `POST /api/post/create` — Create post (requires authentication)
+- `GET /api/post/getposts` — Get posts (with search & filter params)
+- `PUT /api/post/updatepost/:postId/:userId` — Update post details
+- `DELETE /api/post/deletepost/:postId/:userId` — Delete post
 
 ### Comment
 - `POST /api/comment/create` — Add comment
@@ -139,116 +136,84 @@ mern-blog/
 - `GET /api/comment/getcomments` — Get all comments (admin)
 
 ## Main Components
-- **Header/Footer:** Navigation and branding
-- **Dashboard:** Admin/user dashboard with stats and management
-- **PostCard:** Displays blog post summary
-- **CommentSection/Comment:** Add, view, and like comments
-- **Auth (SignIn/SignUp/OAuth):** User authentication
-- **PrivateRoute/OnlyAdminPrivateRoute:** Route protection
-- **ThemeProvider:** Dark/light mode support
-- **Projects/About:** Informational pages
+- **Header/Footer:** Navigation, quick-posting trigger, and brand assets
+- **Dashboard:** Stats display, user, post, and comment management tables
+- **PostCard:** Scalable grid card representing an article overview
+- **CommentSection/Comment:** Full nested comment threads with styling and likes
+- **Auth (SignIn/SignUp):** Multi-factor input validation with custom animated alerts
+- **PrivateRoute/OnlyAdminPrivateRoute:** Secure client routes
+- **ThemeProvider:** Cosmic slate grid layout background
+- **Projects/About:** Informational portfolio page layouts
 
 ## Getting Started
 
 ### Prerequisites
 - Node.js
-- npm or yarn
-- MongoDB database (cloud or local)
+- pnpm, npm, or yarn
+- MongoDB database (local or cloud instance)
 
 ### Installation
 1. Clone the repository:
    ```sh
-   git clone https://github.com/yourusername/mern-blog.git
+   git clone https://github.com/anishraj-coder/mern-blog.git
    cd mern-blog
    ```
 
-2. Install backend dependencies:
+2. Install backend and workspace dependencies:
    ```sh
-   npm install
+   pnpm install
    ```
 
-3. Install frontend dependencies:
-   ```sh
-   cd client
-   npm install
-   cd ..
-   ```
-
-4. Create a `.env` file in the root directory and add your MongoDB URI and JWT secret:
+3. Create a `.env` file in the root directory:
    ```env
-   MONGO=your_mongodb_connection_string
-   JWT_SECRET=your_jwt_secret
+   MONGO=mongodb://admin:adminpassword@localhost:27017/local_db?authSource=admin
+   JWT_SECRET=your_jwt_secret_fallback
    ```
 
-5. Set up Cloudinary for image uploads in `client/.env`:
+4. Create environment configuration for Cloudinary uploads in `client/.env`:
    ```env
-   VITE_CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
-   VITE_CLOUDINARY_UPLOAD_PRESET=your_cloudinary_upload_preset
+   VITE_CLOUDINARY_CLOUD_NAME=mern_blog
+   VITE_CLOUDINARY_UPLOAD_PRESET=mern_blog_preset
    ```
 
 ## Running the App
 
-1. Start the backend server:
+1. Run the workspace development server (spawns both frontend and backend):
    ```sh
-   npm run dev
+   pnpm run dev
    ```
 
-2. In a new terminal, start the frontend development server:
-   ```sh
-   cd client
-   npm run dev
-   ```
+2. Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ## Deployment
 
-### Backend Deployment
-- Deploy to platforms like Render or Heroku
-- Ensure environment variables are set in the deployment environment
-- MongoDB connection should be configured
-
-### Frontend Deployment
-- Build the frontend:
-  ```sh
-  cd client
-  npm run build
-  ```
-- Deploy to platforms like Vercel or Netlify
-- Configure environment variables for Cloudinary
-
-### Combined Deployment
-- The Express backend is already configured to serve static files from the client build
-- After building the frontend, you can deploy the entire application together
+### Combined Production Build
+The Express backend is configured to serve static assets from the client production build automatically:
+1. Compile frontend assets:
+   ```sh
+   cd client
+   pnpm run build
+   ```
+2. Start production node environment from root directory:
+   ```sh
+   npm start
+   ```
 
 ## Contributing
-
 1. Fork the repository
 2. Create a new branch (`git checkout -b feature/your-feature`)
-3. Commit your changes (`git commit -m 'Add some feature'`)
-4. Push to your fork (`git push origin feature/your-feature`)
+3. Commit changes (`git commit -m 'Add some feature'`)
+4. Push to branch (`git push origin feature/your-feature`)
 5. Open a Pull Request
 
 ## Security
-
-- Never commit sensitive data (like real `.env` values)
-- Use HTTPS in production
-- JWT and cookies are used for secure authentication
-- Passwords are hashed with bcryptjs
-- Input validation is implemented on both frontend and backend
-- CORS is configured to allow only trusted origins
+- Password hashing is enforced via `bcryptjs`.
+- Session tokens are generated securely using cryptographically random byte buffers.
+- Cookie headers are protected using `httpOnly` flags to prevent XSS-based session hijacking.
+- Robust sanitization patterns are implemented in backend authentication validation routes.
 
 ## License
-
-This project is licensed under the ISC License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the ISC License.
 
 ## Credits
-
-- Inspired by modern blog platforms
-- Built by Anuj
-- Uses open source libraries and tools:
-  - [React](https://reactjs.org/)
-  - [Node.js](https://nodejs.org/)
-  - [Express](https://expressjs.com/)
-  - [MongoDB](https://www.mongodb.com/)
-  - [Tailwind CSS](https://tailwindcss.com/)
-  - [Redux Toolkit](https://redux-toolkit.js.org/)
-  - [Cloudinary](https://cloudinary.com/)
+- Built and designed by [Anish Raj](https://github.com/anishraj-coder)

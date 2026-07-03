@@ -137,3 +137,28 @@ export const getUser = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getProjects = async (req, res, next) => {
+  try {
+    const projects = [
+      {
+        id: '1',
+        title: 'MERN Blog Application',
+        description: 'A personal full-stack blogging system built with React, Node.js, Express, and MongoDB. Configured with a session-backed auth architecture and an automated TTL session database cleanup.',
+        tech: ['React', 'Node.js', 'Express', 'MongoDB', 'Tailwind CSS'],
+        link: 'https://github.com/anishraj-coder/mern-blog',
+      },
+      {
+        id: '2',
+        title: 'Personal Web Showcase & Portfolio',
+        description: 'A neat frontend application styled with high-end glassmorphism and animated with micro-transitions to present personal details, skills, and open-source links.',
+        tech: ['HTML', 'Vanilla CSS', 'React', 'Framer Motion'],
+        link: 'https://github.com/anishraj-coder',
+      }
+    ];
+    res.status(200).json(projects);
+  } catch (error) {
+    next(error);
+  }
+};
+
