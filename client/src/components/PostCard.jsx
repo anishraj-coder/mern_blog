@@ -1,25 +1,34 @@
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 export default function PostCard({ post }) {
   return (
-    <div className='group relative w-full border border-teal-500 hover:border-2 h-[400px] overflow-hidden rounded-lg sm:w-[430px] transition-all mx-auto'>
-      <Link to={`/post/${post.slug}`}>
+    <motion.div 
+      whileHover={{ y: -6, scale: 1.01 }}
+      className='group relative w-full glass-panel overflow-hidden rounded-2xl sm:w-[360px] transition-all duration-300 mx-auto flex flex-col justify-between shadow-lg shadow-black/20 hover:shadow-orange-500/5'
+    >
+      <Link to={`/post/${post.slug}`} className='overflow-hidden block'>
         <img
           src={post.image}
           alt='post cover'
-          className='h-[260px] w-full  object-cover group-hover:h-[200px] transition-all duration-300 z-20'
+          className='h-[200px] w-full object-cover group-hover:scale-105 transition-all duration-500'
         />
       </Link>
-      <div className='p-3 flex flex-col gap-2'>
-        <p className='text-lg font-semibold line-clamp-2'>{post.title}</p>
-        <span className='italic text-sm'>{post.category}</span>
+      <div className='p-5 flex flex-col gap-4 flex-grow'>
+        <div className='flex justify-between items-center'>
+          <span className='px-2.5 py-0.5 text-xs font-semibold tracking-wide text-orange-500 uppercase bg-orange-500/10 rounded-full border border-orange-500/20'>
+            {post.category}
+          </span>
+        </div>
+        <p className='text-lg font-bold line-clamp-2 text-slate-800 dark:text-slate-100 group-hover:text-orange-500 transition-colors duration-300'>{post.title}</p>
+        
         <Link
           to={`/post/${post.slug}`}
-          className='z-10 group-hover:bottom-0 absolute bottom-[-200px] left-0 right-0 border border-teal-500 text-teal-500 hover:bg-teal-500 hover:text-white transition-all duration-300 text-center py-2 rounded-md !rounded-tl-none m-2'
+          className='mt-auto w-full py-2.5 rounded-full bg-gradient-to-r from-orange-500 to-rose-500 hover:opacity-90 text-white text-center font-semibold text-sm shadow-md shadow-orange-500/10 transition-all duration-300'
         >
-          Read article
+          Read Article
         </Link>
       </div>
-    </div>
+    </motion.div>
   );
 }
