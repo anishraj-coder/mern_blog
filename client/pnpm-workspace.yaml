@@ -1,0 +1,6 @@
+allowBuilds:
+  '@swc/core': false
+  contentlayer: false
+  esbuild: false
+  protobufjs: false
+  sharp: false
